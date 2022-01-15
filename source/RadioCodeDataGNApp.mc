@@ -7,6 +7,8 @@ using Toybox.BluetoothLowEnergy as Ble;
 class RadiaCodeDataGNApp extends Application.AppBase {
 
     private var _scanController = null;
+    private var _device = null;
+    private var _dataController = null;
 
     function initialize() {
         AppBase.initialize();
@@ -22,6 +24,10 @@ class RadiaCodeDataGNApp extends Application.AppBase {
 
     // onStop() is called when your application is exiting
     function onStop(state as Dictionary?) as Void {
+        Ble.setScanState(Ble.SCAN_STATE_OFF);
+        if(self._device != null) {
+            self._dataController.stop();
+        }
     }
 
     // Return the initial view of your application here
@@ -29,6 +35,12 @@ class RadiaCodeDataGNApp extends Application.AppBase {
         return [ new RadiaCodeDataGNView() ] as Array<Views or InputDelegates>;
     }
 
+    function connect(scanResult as Toybox.BluetoothLowEnergy.ScanResult) as Void {
+        self._dataController = new DataController(scanResult);
+        Ble.setDelegate(self._dataController);
+        Ble.setScanState(Ble.SCAN_STATE_OFF);
+        self._dataController.start();
+    }
 }
 
 function getApp() as RadioCodeDataGNApp {

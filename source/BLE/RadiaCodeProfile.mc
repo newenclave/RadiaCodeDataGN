@@ -2,7 +2,10 @@ using Toybox.BluetoothLowEnergy as Ble;
 
 class RadiaCodeProfile {
 
-    public static const RADIA_CODE_SERVICE      = Ble.stringToUuid("e63215e5-7003-49d8-96b0-b024798fb901");
+    // remporary using this device to check connection
+    public static const RADIA_CODE_SERVICE      = Ble.stringToUuid("63462a4a-c28c-4ffd-87a4-2d23a1c72581");
+
+    //public static const RADIA_CODE_SERVICE      = Ble.stringToUuid("e63215e5-7003-49d8-96b0-b024798fb901");
     public static const RADIA_CODE_WRITE_CHAR   = Ble.stringToUuid("e63215e6-7003-49d8-96b0-b024798fb901");
     public static const RADIA_CODE_NOTIFY_CHAR  = Ble.stringToUuid("e63215e7-7003-49d8-96b0-b024798fb901");
 
