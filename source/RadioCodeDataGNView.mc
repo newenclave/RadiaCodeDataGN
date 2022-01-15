@@ -12,6 +12,11 @@ class RadiaCodeDataGNView extends WatchUi.SimpleDataField {
     }
 
     function compute(info as Activity.Info) as Numeric or Duration or String or Null {
-        return 0.0;
+        var curret = getApp().getCurrentDevice();
+        if(curret != null) {
+            return getApp().getCurrentDevice().get(:doseRate);
+        }
+        return -0.1f;
     }
 }
+

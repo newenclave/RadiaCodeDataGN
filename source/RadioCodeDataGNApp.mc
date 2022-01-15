@@ -8,7 +8,7 @@ class RadiaCodeDataGNApp extends Application.AppBase {
 
     private var _scanController = null;
     private var _device = null;
-    private var _dataController = null;
+    private var _dataController as DataControllerInterface or Null = null;
 
     function initialize() {
         AppBase.initialize();
@@ -40,6 +40,10 @@ class RadiaCodeDataGNApp extends Application.AppBase {
         Ble.setDelegate(self._dataController);
         Ble.setScanState(Ble.SCAN_STATE_OFF);
         self._dataController.start();
+    }
+
+    function getCurrentDevice() as DataControllerInterface or Null {
+        return self._dataController;
     }
 }
 
