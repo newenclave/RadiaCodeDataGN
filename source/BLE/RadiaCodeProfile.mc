@@ -9,6 +9,7 @@ class RadiaCodeProfile {
     //public static const RADIA_CODE_SERVICE      = Ble.stringToUuid("e63215e5-7003-49d8-96b0-b024798fb901");
     //public static const RADIA_CODE_NOTIFY_CHAR  = Ble.stringToUuid("e63215e7-7003-49d8-96b0-b024798fb901");
     public static const RADIA_CODE_WRITE_CHAR   = Ble.stringToUuid("e63215e6-7003-49d8-96b0-b024798fb901");
+    public static const ATOM_FAST_CHAR2            = Ble.stringToUuid("8E26EDC8-A1E9-4C06-9BD0-97B97E7B3FB9");
 
     private static const _profileDef = {
         :uuid => RADIA_CODE_SERVICE,
@@ -19,6 +20,11 @@ class RadiaCodeProfile {
             ]
         }, {
             :uuid => RADIA_CODE_NOTIFY_CHAR,
+            :descriptors => [
+                Ble.cccdUuid()
+            ]
+        }, {
+            :uuid => ATOM_FAST_CHAR2,
             :descriptors => [
                 Ble.cccdUuid()
             ]

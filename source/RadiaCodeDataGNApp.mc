@@ -35,8 +35,8 @@ class RadiaCodeDataGNApp extends Application.AppBase {
         return [ new RadiaCodeDataGNView() ] as Array<Views or InputDelegates>;
     }
 
-    function connect(scanResult as Toybox.BluetoothLowEnergy.ScanResult) as Void {
-        self._dataController = new DataController(scanResult);
+    function connect(scanResult as Ble.ScanResult) as Void {
+        self._dataController = new RadiaCodeDataController(scanResult);
         Ble.setDelegate(self._dataController);
         Ble.setScanState(Ble.SCAN_STATE_OFF);
         self._dataController.start();

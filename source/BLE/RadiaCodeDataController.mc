@@ -2,7 +2,7 @@
 using Toybox.BluetoothLowEnergy as Ble;
 
 // implements DataControllerInterface
-class DataController extends Ble.BleDelegate {
+class RadiaCodeDataController extends QueueDelegate {
 
     private var _device as Ble.Device? = null;
     private var _scanResult = null;
@@ -12,18 +12,20 @@ class DataController extends Ble.BleDelegate {
 
     function initialize(scanResult) {
         self._scanResult = scanResult;
-        BleDelegate.initialize();
+        QueueDelegate.initialize();
     }
 
     function start() as Void {
         self._data[:doseRate] = 1.65f;
         self._device = Ble.pairDevice(self._scanResult);
+        self.startQueue();
     }
 
     function stop() as Void {
         if(self._device != null) {
             Ble.unpairDevice(self._device);
         }
+        self.stopQueue(true);
     }
 
     function get(opt) {
@@ -34,8 +36,8 @@ class DataController extends Ble.BleDelegate {
         return self._ready;
     }
 
-    function startNotifications() {
-        System.println("startNotification Begin");
+/// Calls/Callbacks implementation BEGIN
+    function startNotificationsCall(params) as Void {
         try {
             var char = self._service.getCharacteristic(RadiaCodeProfile.getNotificationCharacteristics());
             if(char) {
@@ -45,11 +47,31 @@ class DataController extends Ble.BleDelegate {
         } catch(e) {
             System.println("startNotification ex " + e.getErrorMessage());
         }
-        System.println("startNotification End");
+    }
+    function startNotificationsCallback(params, callbakcParams) as Void {
+        System.println("Ready = true");
+        self._ready = true;
+    }
+
+    function getDataCall(params) as Void {
+        var char = self._service.getCharacteristic(RadiaCodeProfile.ATOM_FAST_CHAR2);
+        if(char) {
+            char.requestRead();
+        }
+    }
+    function getDataCallback(params, callbackData) as Void {
+        System.println("getDataCallback " + callbackData.toString());
+    }
+
+/// Calls/Callbacks implementation END
+
+    function startProcess() {
+        self.getQueue().push(method(:startNotificationsCall), [], method(:startNotificationsCallback), []);
+        self.getQueue().push(method(:getDataCall), [], method(:getDataCallback), []);
     }
 
     /// BleDelegate implementation
-    function onConnectedStateChanged(device, state) as Void {
+    function onConnectedStateChanged(device as Ble.Device, state as Ble.ConnectionState) as Void {
         if(self._device != device) {
             return;
         }
@@ -60,26 +82,12 @@ class DataController extends Ble.BleDelegate {
         }
         self._service = self._device.getService(RadiaCodeProfile.getService());
         if(self._service) {
-            self.startNotifications();
+            self.startProcess();
         }
     }
 
     function onCharacteristicChanged(chars as Ble.Characteristic, value as Lang.ByteArray) as Void {
         System.println("Notification!");
-    }
-
-    function onCharacteristicRead(chars as Ble.Characteristic, status as Ble.Status, value as Lang.ByteArray) as Void {
-    }
-
-    function onCharacteristicWrite(chars as Ble.Characteristic, status as Ble.Status) as Void {
-    }
-
-    function onDescriptorRead(descriptor as Ble.Descriptor, status as Ble.Status, value as Lang.ByteArray) as Void {
-    }
-
-    function onDescriptorWrite(descriptor as BluetoothLowEnergy.Descriptor, status as BluetoothLowEnergy.Status) as Void {
-        System.println("Ready = true");
-        self._ready = true;
     }
 }
 
